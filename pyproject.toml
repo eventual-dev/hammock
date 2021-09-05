@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "hammock"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Dmitriesvkii <ivan.dmitrievsky@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+mypy = "^0.910"
+black = "^21.8b0"
+flake8 = "^3.9.2"
+flake8-bugbear = "^21.4.3"
+flake8-pie = "^0.15.0"
+isort = "^5.9.3"
+coverage = { extras = ["toml"], version = "^5.5" }
+autoflake = "^1.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+combine_as_imports = true
+
+[tool.black]
+target-version = ['py37']
+
+[tool.pytest.ini_options]
+addopts = "--random-order"
+
+testpaths = [
+    "tests",
+]
+
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["hammock"]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = true
