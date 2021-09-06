@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, Callable, Generic, Optional, TypeVar, Union
 
 from hammock.spy import CallHistory
 from hammock.util import name_from_attr
@@ -8,19 +8,16 @@ InterfaceType = TypeVar("InterfaceType")
 
 
 @dataclass(frozen=True)
-class MethodSpec:
-    method: Union[Callable[[InterfaceType], Any], property]
+class AttrMock(Generic[InterfaceType]):
+    attr: Union[Callable[[InterfaceType], Any], property]
     stub_with: Any
     count: bool = False
 
     @property
     def attr_name(self) -> str:
-        return name_from_attr(self.method)
+        return name_from_attr(self.attr)
 
     def wrap_attr(self, attr: Any, call_history: Optional[CallHistory]) -> Any:
-        # fn = attr.fget if isinstance(attr, property) else attr
-
-        # @wraps(fn)
         def new_attr_(*args: Any, **kwargs: Any) -> Any:
             return self.stub_with
 

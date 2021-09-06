@@ -1,9 +1,11 @@
-from .contract import StubContract
+from .attr import AttrMock
+from .contract import AttrContract, RaiseContract, ReturnContract
 from .patch import Patcher
-from .spec import MethodSpec
 
 __all__ = [
-    "MethodSpec",
+    "AttrMock",
     "Patcher",
-    "StubContract",
+    "AttrContract",
+    "ReturnContract",
+    "RaiseContract",
 ]

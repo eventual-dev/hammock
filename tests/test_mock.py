@@ -1,12 +1,15 @@
 from typing import Optional
 
 import hammock
+from hammock import AttrContract, ReturnContract
 from tests.stack.abstract import StackInt
 
 
 class MockStack(StackInt[str]):
     def peek(self) -> Optional[str]:
-        raise
+        raise AttrContract[Optional[str]](
+            ReturnContract(args=(), kwargs={}, returns="value"),
+        )
 
     def pop(self) -> str:
         raise
@@ -16,7 +19,7 @@ class MockStack(StackInt[str]):
 
     @property
     def size(self) -> int:
-        raise
+        raise AttrContract[int](ReturnContract(args=(), kwargs={}, returns=10))
 
 
 def test_stack_mock() -> None:
@@ -24,13 +27,13 @@ def test_stack_mock() -> None:
     stack_mock = patcher.mock(
         MockStack,
         [
-            hammock.MethodSpec(
-                method=StackInt.peek,
+            hammock.AttrMock(
+                attr=StackInt.peek,
                 stub_with="value",
                 count=True,
             ),
-            hammock.MethodSpec(
-                method=StackInt.size,
+            hammock.AttrMock(
+                attr=StackInt.size,
                 stub_with=10,
             ),
         ],

@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Type, TypeVar
 
-from hammock.spec import MethodSpec
+from hammock import AttrContract, ReturnContract
+from hammock.attr import AttrMock
 from hammock.spy import CallHistory
 
 InterfaceType = TypeVar("InterfaceType", covariant=True)
@@ -14,19 +15,29 @@ class Patcher:
     def mock(
         self,
         cls_to_patch: Type[InterfaceType],
-        method_spec_seq: Iterable[MethodSpec],
+        attr_mock_seq: Iterable[AttrMock],
     ) -> InterfaceType:
         base_cls = cls_to_patch.__base__
+        obj_with_contract = cls_to_patch()
 
         abstract_method_name_set = getattr(base_cls, "__abstractmethods__", frozenset())
 
         cls_dict = {}
-        for method_spec in method_spec_seq:
-            attr = getattr(base_cls, method_spec.attr_name)
-            method_call_history = (
-                None if method_spec.count is None else self.call_history
-            )
-            cls_dict[method_spec.attr_name] = method_spec.wrap_attr(
+        for attr_mock in attr_mock_seq:
+            attr = getattr(base_cls, attr_mock.attr_name)
+            method_call_history = None if attr_mock.count is None else self.call_history
+            try:
+                getattr(obj_with_contract, attr_mock.attr_name)
+            except AttrContract as e:
+                xs = [
+                    contract.returns
+                    for contract in e.call_contracts
+                    if isinstance(contract, ReturnContract)
+                ]
+                if attr_mock.stub_with not in xs:
+                    raise RuntimeError("not sure what to do")
+
+            cls_dict[attr_mock.attr_name] = attr_mock.wrap_attr(
                 attr, call_history=method_call_history
             )
 
@@ -34,7 +45,7 @@ class Patcher:
             raise ValueError("this abstract method was not stubbed")
 
         for name in abstract_method_name_set - {
-            method_spec.attr_name for method_spec in method_spec_seq
+            method_spec.attr_name for method_spec in attr_mock_seq
         }:
             cls_dict[name] = new_attr_fn
 
