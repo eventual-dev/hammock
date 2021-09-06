@@ -1,14 +1,28 @@
+from typing import Optional
+
 import hammock
 from tests.stack.abstract import StackInt
 
 
-class MockStack(StackInt[str], metaclass=hammock.MockMeta):
-    pass
+class MockStack(StackInt[str]):
+    def peek(self) -> Optional[str]:
+        raise
+
+    def pop(self) -> str:
+        raise
+
+    def push(self, value: str) -> None:
+        raise
+
+    @property
+    def size(self) -> int:
+        raise
 
 
 def test_stack_mock() -> None:
-    mock_control = hammock.MockControl()
-    stack_mock = MockStack.set_up(
+    patcher = hammock.Patcher()
+    stack_mock = patcher.mock(
+        MockStack,
         [
             hammock.MethodSpec(
                 method=StackInt.peek,
@@ -20,10 +34,9 @@ def test_stack_mock() -> None:
                 stub_with=10,
             ),
         ],
-        mock_control,
     )
     assert stack_mock.peek() == "value"
     assert stack_mock.size == 10
     assert not stack_mock.is_empty
 
-    assert mock_control.call_history.count(StackInt.size) == 2
+    assert patcher.call_history.count(StackInt.size) == 2

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, TypeVar, Union
 
-from hammock.control import CallHistory
+from hammock.spy import CallHistory
 from hammock.util import name_from_attr
 
 InterfaceType = TypeVar("InterfaceType")

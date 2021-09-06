@@ -1,11 +1,9 @@
-from .control import MockControl
-from .meta import MockMeta
+from .contract import StubContract
+from .patch import Patcher
 from .spec import MethodSpec
-from .stub import StubContract
 
 __all__ = [
     "MethodSpec",
-    "MockControl",
-    "MockMeta",
+    "Patcher",
     "StubContract",
 ]

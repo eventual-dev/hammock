@@ -14,8 +14,3 @@ class CallHistory:
 
     def count(self, method: Union[Callable[[Any], Any], property]) -> int:
         return self.call_count_from_method_name.get(name_from_attr(method), 0)
-
-
-@dataclass
-class MockControl:
-    call_history: CallHistory = field(default_factory=CallHistory)
